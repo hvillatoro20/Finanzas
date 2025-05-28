@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal Expense Tracker - Manage your income and expenses with detailed analytics">
+    <title>Expense Tracker | Personal Finance Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">Expense Tracker</h1>
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode">
+                    <span class="icon">🌓</span>
+                </button>
+                <button id="menu-toggle" class="btn-icon mobile-only" aria-label="Toggle menu">
+                    <span class="icon">☰</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li class="nav-item active" data-section="dashboard">
+                        <span class="icon">📊</span>
+                        <span class="text">Dashboard</span>
+                    </li>
+                    <li class="nav-item" data-section="transactions">
+                        <span class="icon">💸</span>
+                        <span class="text">Transactions</span>
+                    </li>
+                    <li class="nav-item" data-section="add-transaction">
+                        <span class="icon">➕</span>
+                        <span class="text">Add Transaction</span>
+                    </li>
+                    <li class="nav-item" data-section="budgets">
+                        <span class="icon">💰</span>
+                        <span class="text">Budgets</span>
+                    </li>
+                    <li class="nav-item" data-section="reports">
+                        <span class="icon">📈</span>
+                        <span class="text">Reports</span>
+                    </li>
+                    <li class="nav-item" data-section="settings">
+                        <span class="icon">⚙️</span>
+                        <span class="text">Settings</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2>Dashboard</h2>
+                    <div class="period-selector">
+                        <select id="dashboard-period">
+                            <option value="day">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="summary-cards">
+                    <div class="card income-card">
+                        <h3>Income</h3>
+                        <p class="amount" id="income-amount">$0.00</p>
+                        <p class="change positive" id="income-change">+0%</p>
+                    </div>
+                    <div class="card expense-card">
+                        <h3>Expenses</h3>
+                        <p class="amount" id="expense-amount">$0.00</p>
+                        <p class="change negative" id="expense-change">-0%</p>
+                    </div>
+                    <div class="card balance-card">
+                        <h3>Balance</h3>
+                        <p class="amount" id="balance-amount">$0.00</p>
+                        <p class="change" id="balance-change">0%</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="spending-chart"></canvas>
+                </div>
+
+                <div class="recent-transactions">
+                    <h3>Recent Transactions</h3>
+                    <div class="transactions-list" id="recent-transactions-list">
+                        <!-- Transactions will be added here dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions Section -->
+            <section id="transactions" class="content-section">
+                <div class="section-header">
+                    <h2>Transactions</h2>
+                    <div class="filters">
+                        <select id="transaction-type-filter">
+                            <option value="all">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                        <select id="transaction-category-filter">
+                            <option value="all">All Categories</option>
+                            <!-- Categories will be added dynamically -->
+                        </select>
+                        <input type="date" id="transaction-date-filter">
+                        <button id="clear-filters" class="btn-text">Clear</button>
+                    </div>
+                </div>
+
+                <div class="transactions-list" id="all-transactions-list">
+                    <!-- Transactions will be added here dynamically -->
+                </div>
+            </section>
+
+            <!-- Add Transaction Section -->
+            <section id="add-transaction" class="content-section">
+                <div class="section-header">
+                    <h2>Add Transaction</h2>
+                </div>
+
+                <form id="transaction-form" class="form">
+                    <div class="form-group">
+                        <label for="transaction-type">Type</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="transaction-type" value="income" checked>
+                                <span>Income</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="transaction-type" value="expense">
+                                <span>Expense</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transaction-amount">Amount</label>
+                        <input type="number" id="transaction-amount" min="0.01" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transaction-description">Description</label>
+                        <input type="text" id="transaction-description" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transaction-category">Category</label>
+                        <select id="transaction-category" required>
+                            <!-- Categories will be added dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transaction-date">Date</label>
+                        <input type="date" id="transaction-date" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Add Transaction</button>
+                        <button type="reset" class="btn-secondary">Clear</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Budgets Section -->
+            <section id="budgets" class="content-section">
+                <div class="section-header">
+                    <h2>Budgets</h2>
+                    <button id="add-budget" class="btn-primary">Add Budget</button>
+                </div>
+
+                <div class="budgets-list" id="budgets-list">
+                    <!-- Budgets will be added here dynamically -->
+                </div>
+
+                <div class="budget-progress-container">
+                    <h3>Budget Progress</h3>
+                    <div id="budget-progress-chart">
+                        <!-- Budget progress bars will be added here dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h2>Reports</h2>
+                    <div class="period-selector">
+                        <select id="report-period">
+                            <option value="week">Weekly</option>
+                            <option value="month" selected>Monthly</option>
+                            <option value="year">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="report-charts">
+                    <div class="chart-container">
+                        <canvas id="income-vs-expense-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="category-distribution-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="export-import">
+                    <h3>Data Management</h3>
+                    <div class="actions">
+                        <button id="export-data" class="btn-secondary">Export Data</button>
+                        <button id="import-data" class="btn-secondary">Import Data</button>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                        <button id="clear-data" class="btn-danger">Clear All Data</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h2>Settings</h2>
+                </div>
+
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency">
+                            <option value="$">Dollar ($)</option>
+                            <option value="€">Euro (€)</option>
+                            <option value="£">Pound (£)</option>
+                            <option value="¥">Yen (¥)</option>
+                            <option value="₹">Rupee (₹)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="first-day-of-week">First Day of Week</label>
+                        <select id="first-day-of-week">
+                            <option value="0">Sunday</option>
+                            <option value="1" selected>Monday</option>
+                            <option value="6">Saturday</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categories">Manage Categories</label>
+                        <div class="categories-management">
+                            <input type="text" id="new-category" placeholder="New category name">
+                            <button id="add-category" class="btn-text">Add</button>
+                        </div>
+                        <div class="categories-list" id="categories-list">
+                            <!-- Categories will be added here dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="save-settings" class="btn-primary">Save Settings</button>
+                        <button id="reset-settings" class="btn-secondary">Reset to Defaults</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Budget Modal -->
+    <div class="modal" id="budget-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Add New Budget</h3>
+            <form id="budget-form">
+                <div class="form-group">
+                    <label for="budget-category">Category</label>
+                    <select id="budget-category" required>
+                        <!-- Categories will be added dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budget-amount">Amount</label>
+                    <input type="number" id="budget-amount" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="budget-period">Period</label>
+                    <select id="budget-period">
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save Budget</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <h3 id="confirm-title">Confirm Action</h3>
+            <p id="confirm-message">Are you sure you want to perform this action?</p>
+            <div class="modal-actions">
+                <button id="confirm-cancel" class="btn-secondary">Cancel</button>
+                <button id="confirm-ok" class="btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
